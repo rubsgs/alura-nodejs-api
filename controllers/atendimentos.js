@@ -6,8 +6,12 @@ module.exports = app => {
 
     app.post('/atendimentos', (req, res) => {
         const atendimento = req.body;
-        Atendimento.adiciona(atendimento);
-
-        res.send('Você está na rota de atendimentos e está realizando um POST');
+        Atendimento
+            .adiciona(atendimento)
+            .then(resultado => {
+                res.status(200).json(resultado);
+            }).catch(erro => {
+                res.status(400).json(erro);
+            });
     });
 }
