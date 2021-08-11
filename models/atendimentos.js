@@ -15,13 +15,66 @@ class Atendimentos {
                         reject(erro)
                     } else {
                         console.log("atendimento criado com sucesso");
-                        resolve(resultados);
+                        resolve(atendimento);
                     }
                 });
             } else {
                 reject({'erro': 'A data do atendimento não pode ser anterior a data atual'});
             }
 
+        });
+    }
+
+    lista() {
+        const sql = 'SELECT * FROM atendimentos;';
+        return new Promise((resolve, reject) => {
+            conexao.query(sql, (erro, resultados) => {
+                if(erro){
+                    reject(erro);
+                }
+                resolve(resultados);
+            });
+        });
+    }
+
+    buscaPorId(id){
+        const sql = `SELECT * FROM atendimentos WHERE id=${+id}`;
+        return new Promise((resolve, reject) => {
+            conexao.query(sql, (erro, resultado) => {
+                if(erro){
+                    reject(erro);
+                }
+                resolve(resultado[0]);
+            });
+        });
+    }
+
+    altera(id, valores) {
+        if(valores.data){
+            const data = moment(valores.data, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+            valores.data = data;
+        }
+
+        const sql = 'UPDATE atendimentos SET ? WHERE id=?';
+        return new Promise((resolve, reject) => {
+            conexao.query(sql, [valores, id], (erro, resultado) => {
+                if(erro){
+                    reject(erro);
+                }
+                resolve({...valores, id});
+            });
+        });
+    }
+
+    deleta(id){
+        const sql = 'DELETE FROM atendimentos WHERE id=?';
+        return new Promise((resolve, reject) => {
+            conexao.query(sql, id, (erro, resultados) => {
+                if(erro){
+                    reject(erro);
+                }
+                resolve(resultados);
+            })
         });
     }
 }
